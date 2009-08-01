@@ -1,0 +1,7 @@
+"JSynthLib":http://www.jsynthlib.org
+
+Other pages made to help this project:
+"SPD-11 wiki":http://spd-11.wikispaces.com
+"JSynthLib newbie wiki":http://jsynthlib.wikispaces.com
+
+This is my first project in Java.
