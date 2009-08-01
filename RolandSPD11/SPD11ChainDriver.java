@@ -17,9 +17,5 @@ public class SPD11ChainDriver extends Driver {
         patchSize    = 75;
         patchNameSize =0;
     }
-    public void requestPatchDump(int bankNum, int patchNum) {
-        final SysexHandler.NameValue[] nameValues = { };
-        send(SYS_REQ.toSysexMessage(getDeviceID(), nameValues));
-    }
 
 }

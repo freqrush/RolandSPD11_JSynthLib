@@ -24,11 +24,6 @@ package synthdrivers.RolandSPD11;
 import core.*;
 
 public class SPD11PadDriver extends Driver {    
-    /**
-     * 0->4: header
-     * 5->8: address (bankNum is about the patch in SPD-11 memory
-     *                patchNum is about the pad)
-     */
     final static SysexHandler SYS_REQ = new SysexHandler
     //0  1  2  3  4  5       6         7     8  9  10 11 12     13     14
     ("F0 41 @@ 60 11 00 *bankNum* *patchNum* 00 00 00 00 11 *checkSum* F7");
@@ -75,17 +70,11 @@ public class SPD11PadDriver extends Driver {
         int chkSm = 128-(sum % 128);
         p.sysex[offset] = (byte)chkSm;
     }
-/**
- * @see core.Driver#requestPatchDump(int, int)
- * @see SPD11SettingsDriver#requestPatchDump(int, int)
- * @param bankNum is the SPD-11 patch (0~63)
- * @param patchNum is increased with +1 because patchNum 0 is "settings"
- */
     public void requestPatchDump(int bankNum, int patchNum) {
         int checkSum = 0x7f -bankNum - patchNum - 0x11;
         final SysexHandler.NameValue[] nameValues = {
-            new SysexHandler.NameValue("patchNum", patchNum+1), //= spd11 pad
-            new SysexHandler.NameValue("bankNum", bankNum),     //= spd11 patch
+            new SysexHandler.NameValue("patchNum", patchNum+1),
+            new SysexHandler.NameValue("bankNum", bankNum),
             new SysexHandler.NameValue("checkSum", checkSum)};
         send(SYS_REQ.toSysexMessage(getDeviceID(), nameValues));
     }

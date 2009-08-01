@@ -2,9 +2,7 @@ package synthdrivers.RolandSPD11;
 
 //import synthdrivers.RolandSPD11.SPD11PadDriver;
 //import synthdrivers.RolandSPD11.SPD11SettingsDriver;
-import synthdrivers.RolandVG88.RolandVG88SingleDriver;
 import core.BankDriver;
-import core.ErrorMsg;
 import core.Patch;
 
 /**
@@ -73,13 +71,13 @@ public class SPD11PatchDriver extends BankDriver {
      */
     // @Override
     public Patch getPatch(Patch bank, int patchNum) {
-        if (patchNum==33){ //it's the settings
+        if (patchNum==33){
             byte[] sysex = new byte[19];
             System.arraycopy(bank.sysex, 0, sysex, 0, 19);
             return new Patch(sysex, settingsDriver);
         }
         else {
-            byte[] sysex = new byte[28]; //it's a pad
+            byte[] sysex = new byte[28];
             System.arraycopy(bank.sysex, 19+28*patchNum, sysex, 19+28*(patchNum+1), 28);
             return new Patch(sysex, padDriver);
         }
@@ -118,21 +116,9 @@ public class SPD11PatchDriver extends BankDriver {
     }
     /**
      * request a full SPD11patch -> this is a bank of pads + settings so patchNum is ignored
-     * @param bankNum is the SPD-11 patch we request (0~63 = patch1~64)
      */
     public void requestPatchDump(int bankNum, int patchNum) {
-        patchSize = 28;//first get the pads data, 28 bytes long each
-        patchNameSize=0;//TODO: use a textlist with names for pads, patches and banks
-        for (int i = 0; i < 32; i++) {
-            padDriver.requestPatchDump(bankNum, i);
-            try {
-                Thread.sleep(600);  // wait (x) milliseconds .
-            } catch (Exception e) {
-                ErrorMsg.reportStatus(e);
-            }
-        }
-        patchSize = 19;//now get the settings data 19 bytes long
-        settingsDriver.requestPatchDump(bankNum, 0);
+        
     }
     /**
      * Sends an SPD11Patch to a new location, calculating the new<br>

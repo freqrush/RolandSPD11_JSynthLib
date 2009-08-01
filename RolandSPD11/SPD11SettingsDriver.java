@@ -6,7 +6,7 @@ import core.SysexHandler;
 
 public class SPD11SettingsDriver extends Driver {    
     final static SysexHandler SYS_REQ = new SysexHandler
-    //0  1  2  3  4  5       6     7 8  9  10 11 12     13     14
+    //0  1  2  3  4  5       6         7     8  9  10 11 12     13     14
     ("F0 41 @@ 60 11 00 *bankNum* 00 00 00 00 00 11 *checkSum* F7");
     public SPD11SettingsDriver(){
         super ("Settings" , "Peter Geirnaert");
@@ -48,43 +48,39 @@ public class SPD11SettingsDriver extends Driver {
         int chkSm = 128-(sum % 128);
         p.sysex[offset] = (byte)chkSm;
     }
-    /**
-     * @see core.Driver#requestPatchDump(int, int)
-     * @param patchNum is always 0 for settings so ignored
-     * @param bankNum is the SPD-11 patch we request settings from
-     */
     public void requestPatchDump(int bankNum, int patchNum) {
-        int checkSum = 0x80 -bankNum - 0x11;
+        int checkSum = 0x7f -bankNum - patchNum - 0x11;
         final SysexHandler.NameValue[] nameValues = {
             new SysexHandler.NameValue("bankNum", bankNum),
             new SysexHandler.NameValue("checkSum", checkSum)};
         send(SYS_REQ.toSysexMessage(getDeviceID(), nameValues));
     }
-    /**
-     * TODO:replace this by an external standard "Settings"
-     */
     public Patch createNewPatch() {
+        //replace this by a standard "Settings" : FIXIT !! 
         byte sysex[] = {
-            (byte)0xF0, (byte)0x41, (byte)0x09, (byte)0x60, (byte)0x12, //header
-            (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, //address
-            (byte)0x00, (byte)0x00, (byte)0x01, (byte)0x00, //data
-            (byte)0x06, (byte)0x05, (byte)0x00, (byte)0x07, //data
-            (byte)0x6D, (byte)0xF7, //checksum + end of exclusive
+            (byte)0xF0, (byte)0x41, (byte)0x09, (byte)0x60, (byte)0x12,
+            (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
+            (byte)0x06, (byte)0x05, (byte)0x00, (byte)0x18,
+            (byte)0x14, (byte)0x07, (byte)0x00, (byte)0x05,
+            (byte)0x09, (byte)0x2F,
             };
         Patch p = new Patch(sysex, this);
         return p;
     }
     /**
-     * Sends a settings to a set patch<p>
+     * Sends a patch to a set location on a synth.<p>
+     * Override this if required.
      * @see Patch#send(int, int)
-     * @param bankNum is the SPD-11 patch
-     * @param patchNum is ignored because it's always 0 for settings
      */
     protected void storePatch(Patch p, int bankNum, int patchNum) {
         //replace old values in Patch p
         p.sysex[6]=(byte)bankNum;
-        //recalculate the new checksum with the new bankNum in the patch.
-        calculateChecksum(p,5,16,17); 
+        p.sysex[7]=(byte)patchNum;
+        //recalculate the new checksum with the new bankNum and patchNum in the patch.
+        calculateChecksum(p,5,12,13); 
+        //send program change equal to the bankNum value (=SPD11patch), not the patchNum (=SPD11pad) 
+        //this makes the driver switch the SPD11 to the edited patch when sending a pad-data. So the user can immediately use the sound. deprecated because patchDriver handles it.
+        //setPatchNum(bankNum);
         sendPatch(p);        
     }
 }
