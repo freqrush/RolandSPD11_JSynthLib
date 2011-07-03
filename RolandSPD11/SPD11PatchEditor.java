@@ -3,8 +3,6 @@ import core.*;
  
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
 class RolandSPD11PatchEditor extends PatchEditorFrame
 {
   public RolandSPD11PatchEditor(Patch patch)
@@ -31,6 +29,7 @@ class RolandSPD11PatchEditor extends PatchEditorFrame
      
   }
 }
+//TODO: remove this !!!
 class VcedSender extends SysexSender
 {
     public VcedSender(int param)

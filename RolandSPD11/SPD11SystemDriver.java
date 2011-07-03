@@ -23,10 +23,17 @@ package synthdrivers.RolandSPD11;
 
 import core.*;
 
-public class SPD11SystemDriver extends Driver {   
+/**
+ *
+ * @author peter
+ */
+public class SPD11SystemDriver extends Driver {
     final static SysexHandler SYS_REQ = new SysexHandler
     //0  1  2  3  4  5  6  7  8  9  10 11 12     13     14
     ("F0 41 @@ 60 11 01 00 00 00 00 00 00 1c 63 f7");
+    /**
+     *
+     */
     public SPD11SystemDriver(){
         super ("System","Peter Geirnaert");
         //offset numbers: 0 1 2 3 4 5
